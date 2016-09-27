@@ -1,10 +1,15 @@
-#include <GLFW/glfw3.h>
+﻿#include <GLFW/glfw3.h>
+#include <stdbool.h>
+#include <math.h>
+
+GLFWwindow* window;
+double win_x, win_y;
 
 const int width = 640;
 const int height = 480;
 
 // color = (Red, Green, Blue)
-float* pixels = new float[ width * height * 3];
+float* pixels = new float[width * height * 3];
 
 void drawOnePixel(const int& i, const int& j, const float& red, const float& green, const float& blue)
 {
@@ -55,8 +60,52 @@ void drawLine(const int& i0, const int& j0, const int& i1, const int& j1, const 
 		}
 	}
 
-	
+
 }
+
+void drawPixel(const int& i, const int& j, const float& red, const float& green, const float& blue)
+{
+	pixels[(i + width* j) * 3 + 0] = red;
+	pixels[(i + width* j) * 3 + 1] = green;
+	pixels[(i + width* j) * 3 + 2] = blue;
+}
+
+
+bool measurement(const float cx, const float cy, const float r, const float x_cur, const float y_cur)
+{
+	return (cx - (float)x_cur)*(cx - (float)x_cur) + (cy - (float)y_cur)*(cy - (float)y_cur) - r*r < 0.0;
+}
+
+void DrawCircle(float cx, float cy, float r, int num_segments, bool significant)
+{
+	float theta = 2 * 3.1415926 / float(num_segments);
+	float c = cosf(theta);//precalculate the sine and cosine
+	float s = sinf(theta);
+	float t;
+	float rgb_red, rgb_green, rgb_blue;
+	rgb_red = 1.0f; rgb_green = 0.0f; rgb_blue = 0.0f;
+
+	float x = r;//we start at angle = 0 
+	float y = 0;
+
+	if (measurement(cx, cy, r, win_x, height - win_y) && significant) {
+		rgb_red = 0.0f; rgb_green = 0.0f; rgb_blue = 1.0f;
+	}
+
+	glBegin(GL_LINE_LOOP);
+	for (int ii = 0; ii < num_segments; ii++)
+	{
+		//glVertex2f(x + cx, y + cy);//output vertex 
+		drawPixel(x + cx, y + cy, rgb_red, rgb_green, rgb_blue);
+
+		//apply the rotation matrix
+		t = x;
+		x = c * x - s * y;
+		y = s * t + c * y;
+	}
+	glEnd();
+}
+
 
 void drawSquare(const int& i0, const int& j0, const int& i1, const int& j1, const float& red, const float& green, const float& blue)
 {
@@ -148,7 +197,7 @@ void draw()
 	}
 
 	drawSquare(280, 300, 380, 400, 0, 0, 1);
-		
+
 	drawSquareFill(500, 300, 600, 400, 1, 0, 0);
 
 	drawTriangle(90, 200, 140, 100, 40, 100, 1, 0, 0);
@@ -156,7 +205,7 @@ void draw()
 	drawPentagon(280, 150, 330, 200, 380, 150, 355, 100, 305, 100, 1, 0, 0);
 
 	drawCircle(550, 150, 50, 0, 0, 0);
-	
+
 }
 
 // dynamic memory allocation in c 
