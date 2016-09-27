@@ -236,6 +236,8 @@ int main(void)
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glfwGetCursorPos(window, &win_x, &win_y);
+
 		// white background color
 		for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
