@@ -11,102 +11,229 @@ const int height = 480;
 // color = (Red, Green, Blue)
 float* pixels = new float[width * height * 3];
 
-void drawOnePixel(const int& i, const int& j, const float& red, const float& green, const float& blue)
+struct color
 {
-	pixels[(i + width*j) * 3 + 0] = red;	//red
-	pixels[(i + width*j) * 3 + 1] = green;	//green
-	pixels[(i + width*j) * 3 + 2] = blue;	//blue
-}
+	float red;
+	float green;
+	float blue;
+};
 
-void drawLine(const int& i0, const int& j0, const int& i1, const int& j1, const float& red, const float& green, const float& blue)
+
+class Geometry
 {
-	if (i0 < i1)
-	{
-		for (int i = i0; i <= i1; i++)
-		{
-			const int j = (j1 - j0)*(i - i0) / (i1 - i0) + j0;
+private:
+	float center_x_, center_y_, radius_;
+	color object_color_;
+	color backround_color_;
+	const int num_segments = 1000;
 
-			drawOnePixel(i, j, red, green, blue);
-		}
-	}
-	else if (i0 > i1)
+public:
+	Geometry()
 	{
-		for (int i = i1; i <= i0; i++)
-		{
-			const int j = (j1 - j0)*(i - i0) / (i1 - i0) + j0;
+		backround_color_.red = 1.0f;
+		backround_color_.green = 1.0f;
+		backround_color_.blue = 1.0f;
 
-			drawOnePixel(i, j, red, green, blue);
-		}
+		object_color_.red = 1.0f;
+		object_color_.green = 0.0f;
+		object_color_.blue = 0.0f;
 	}
-	else
+
+	void setBackgroundColor()
 	{
-		if (j0 < j1)
-		{
-			for (int j = j0; j < j1; j++)
+		// white background color
+		for (int i = 0; i < width; i++)
+			for (int j = 0; j < height; j++)
 			{
-				drawOnePixel(i0, j, red, green, blue);
+				pixels[(i + width*j) * 3 + 0] = 1.0f;	//red
+				pixels[(i + width*j) * 3 + 1] = 1.0f;	//green
+				pixels[(i + width*j) * 3 + 2] = 1.0f;	//blue
+			}
+	}
+
+	virtual void draw()
+	{}
+
+	void drawOnePixel(const int& i, const int& j)
+	{
+		pixels[(i + width*j) * 3 + 0] = object_color_.red;	//red
+		pixels[(i + width*j) * 3 + 1] = object_color_.green;	//green
+		pixels[(i + width*j) * 3 + 2] = object_color_.blue;	//blue
+	}
+
+	void setColor(const float& r, const float& g, const float& b)
+	{
+		object_color_.red = r;
+		object_color_.green = g;
+		object_color_.blue = b;
+	}
+
+	void drawLine(const int& i0, const int& j0, const int& i1, const int& j1)
+	{
+		if (i0 < i1)
+		{
+			for (int i = i0; i <= i1; i++)
+			{
+				const int j = (j1 - j0)*(i - i0) / (i1 - i0) + j0;
+
+				drawOnePixel(i, j);
 			}
 		}
-		else if (j0 > j1)
+		else if (i0 > i1)
 		{
-			for (int j = j1; j < j0; j++)
+			for (int i = i1; i <= i0; i++)
 			{
-				drawOnePixel(i0, j, red, green, blue);
+				const int j = (j1 - j0)*(i - i0) / (i1 - i0) + j0;
+
+				drawOnePixel(i, j);
 			}
 		}
 		else
 		{
-			drawOnePixel(i0, j0, red, green, blue);
+			if (j0 < j1)
+			{
+				for (int j = j0; j < j1; j++)
+				{
+					drawOnePixel(i0, j);
+				}
+			}
+			else if (j0 > j1)
+			{
+				for (int j = j1; j < j0; j++)
+				{
+					drawOnePixel(i0, j);
+				}
+			}
+			else
+			{
+				drawOnePixel(i0, j0);
+			}
 		}
 	}
 
-
-}
-
-void drawPixel(const int& i, const int& j, const float& red, const float& green, const float& blue)
-{
-	pixels[(i + width* j) * 3 + 0] = red;
-	pixels[(i + width* j) * 3 + 1] = green;
-	pixels[(i + width* j) * 3 + 2] = blue;
-}
-
-
-bool measurement(const float cx, const float cy, const float r, const float x_cur, const float y_cur)
-{
-	return (cx - (float)x_cur)*(cx - (float)x_cur) + (cy - (float)y_cur)*(cy - (float)y_cur) - r*r < 0.0;
-}
-
-void DrawCircle(float cx, float cy, float r, int num_segments, bool significant)
-{
-	float theta = 2 * 3.1415926 / float(num_segments);
-	float c = cosf(theta);//precalculate the sine and cosine
-	float s = sinf(theta);
-	float t;
-	float rgb_red, rgb_green, rgb_blue;
-	rgb_red = 1.0f; rgb_green = 0.0f; rgb_blue = 0.0f;
-
-	float x = r;//we start at angle = 0 
-	float y = 0;
-
-	if (measurement(cx, cy, r, win_x, height - win_y) && significant) {
-		rgb_red = 0.0f; rgb_green = 0.0f; rgb_blue = 1.0f;
-	}
-
-	glBegin(GL_LINE_LOOP);
-	for (int ii = 0; ii < num_segments; ii++)
+	//box
+	void initialize(const int& _cx, const int& _cy, const int& _half_size)
 	{
-		//glVertex2f(x + cx, y + cy);//output vertex 
-		drawPixel(x + cx, y + cy, rgb_red, rgb_green, rgb_blue);
+		center_x_ = _cx;
+		center_y_ = _cy;
+		radius_ = _half_size * 2;
 
-		//apply the rotation matrix
-		t = x;
-		x = c * x - s * y;
-		y = s * t + c * y;
+		drawLine(center_x_ - (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ + (radius_ / 2));
+		drawLine(center_x_ + (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ - (radius_ / 2));
+		drawLine(center_x_ + (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ - (radius_ / 2));
+		drawLine(center_x_ - (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ + (radius_ / 2));
 	}
-	glEnd();
-}
+
+	//circle
+	void initialize(const float& _cx, const float& _cy, const float& _r, const int& thickness)
+	{
+		
+		center_x_ = _cx;
+		center_y_ = _cy;
+		radius_ = _r;
+
+		float theta = 2 * 3.1415926 / float(num_segments);
+		float c = cosf(theta);//precalculate the sine and cosine
+		float s = sinf(theta);
+		float t;
+
+		float x = radius_;
+		float y = 0;
+
+		for (int i = 0; i < thickness; i++)
+		{
+			x = radius_ + i;
+			y = 0;
+			for (int ii = 0; ii < num_segments; ii++)
+			{
+				drawOnePixel(x + center_x_, y + center_y_);
+
+				//apply the rotation matrix
+				t = x;
+				x = c * x - s * y;
+				y = s * t + c * y;
+			}
+		}
+	}
+};
+
+class Square : public Geometry
+{
+private:
+	int center_x_, center_y_, radius_;
+	
+public:
+	Square()
+	{}
+
+	Square(const int& _cx, const int& _cy, const int& _half_size)
+		: center_x_(_cx), center_y_(_cy), radius_(_half_size * 2)
+	{}
+
+	void draw()
+	{
+		drawLine(center_x_ - (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ + (radius_ / 2));
+		drawLine(center_x_ + (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ - (radius_ / 2));
+		drawLine(center_x_ + (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ - (radius_ / 2));
+		drawLine(center_x_ - (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ + (radius_ / 2));
+	}
+};
 
 
+class Circle : public Geometry
+{
+	int center_x_, center_y_, radius_, thickness_;
+	const int num_segments = 1000;
+
+public:
+	Circle()
+	{}
+
+	Circle(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
+		:center_x_(_center_x), center_y_(_center_y), radius_(_radius), thickness_(_thickness)
+	{}
+
+	void draw()
+	{
+
+		float theta = 2 * 3.1415926 / float(num_segments);
+		float c = cosf(theta);//precalculate the sine and cosine
+		float s = sinf(theta);
+		float t;
+
+		float x = radius_;
+		float y = 0;
+
+		for (int i = 0; i < thickness_; i++)
+		{
+			x = radius_ + i;
+			y = 0;
+			for (int ii = 0; ii < num_segments; ii++)
+			{
+				drawOnePixel(x + center_x_, y + center_y_);
+
+				//apply the rotation matrix
+				t = x;
+				x = c * x - s * y;
+				y = s * t + c * y;
+			}
+		}
+	}
+};
+
+
+class Arrow : public Geometry
+{
+public:
+	Arrow()
+	{}
+
+	void draw()
+	{}
+};
+
+
+/*
 void drawSquare(const int& i0, const int& j0, const int& i1, const int& j1, const float& red, const float& green, const float& blue)
 {
 	for (int i = i0; i < i1; i++)
@@ -143,77 +270,34 @@ void drawPentagon(const int& i0, const int& j0, const int& i1, const int& j1, co
 	drawLine(i4, j4, i3, j3, red, green, blue);
 	drawLine(i0, j0, i4, j4, red, green, blue);
 }
-
-void drawCircle(const int& x, const int& y, const int& radius, const float& red, const float& green, const float& blue)
-{
-	if (radius <= 0)
-		return;
-
-	int xK = 0;
-	int yK = radius;
-	int pK = 3 - (radius + radius);
-
-	do {
-		drawSquareFill(x + xK, y - yK, x + xK + 4, y - yK + 4, red, green, blue);
-
-		drawSquareFill(x - xK, y - yK, x - xK + 4, y - yK + 4, red, green, blue);
-
-		drawSquareFill(x + xK, y + yK, x + xK + 4, y + yK + 4, red, green, blue);
-
-		drawSquareFill(x - xK, y + yK, x - xK + 4, y + yK + 4, red, green, blue);
-
-		drawSquareFill(x + yK, y - xK, x + yK + 4, y - xK + 4, red, green, blue);
-
-		drawSquareFill(x + yK, y + xK, x + yK + 4, y + xK + 4, red, green, blue);
-
-		drawSquareFill(x - yK, y - xK, x - yK + 4, y - xK + 4, red, green, blue);
-
-		drawSquareFill(x - yK, y + xK, x - yK + 4, y + xK + 4, red, green, blue);
-
-
-		xK++;
-
-		if (pK < 0)
-		{
-			pK += (xK << 2) + 6;
-		}
-		else
-		{
-			--yK;
-			pK += ((xK - yK) << 2) + 10;
-		}
-	} while (xK <= yK);
-}
-
-void draw()
-{
-	const int i_center = 50;
-	const int j_center = 50;
-	const int thickness = 10;
-
-	for (int i = 0; i < thickness; i++)
-	{
-		drawLine(40 + i, 300, 140 + i, 400, 0, 1, 0);
-	}
-
-	drawSquare(280, 300, 380, 400, 0, 0, 1);
-
-	drawSquareFill(500, 300, 600, 400, 1, 0, 0);
-
-	drawTriangle(90, 200, 140, 100, 40, 100, 1, 0, 0);
-
-	drawPentagon(280, 150, 330, 200, 380, 150, 355, 100, 305, 100, 1, 0, 0);
-
-	drawCircle(550, 150, 50, 0, 0, 0);
-
-}
-
-// dynamic memory allocation in c 
-// flaot* pixels = (float*)malloc(sizeof(float)*width*height*3);
+*/
 
 int main(void)
 {
 	GLFWwindow* window;
+	Geometry **geo = new Geometry*[10];
+	for (int i = 0; i < 10; i++)
+	{
+		geo[i] = new Square;
+	}
+	
+	geo[0]->setBackgroundColor();
+	for (int j = 0; j < 2; j++)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			int pos = i + (5 * j);
+			if (j == 0)
+			{
+				geo[pos] = new Square(110 * (i + 1), 160 * (j + 1), 20);
+			}
+			else
+			{
+				geo[pos] = new Circle(110 * (i + 1), 160 * (j + 1), 20, 5);
+			}
+			geo[pos]->initialize(110 * (i + 1), 160 * (j + 1), 50, 3);
+		}
+	}
 
 	/* Initialize the library */
 	if (!glfwInit())
@@ -238,16 +322,8 @@ int main(void)
 
 		glfwGetCursorPos(window, &win_x, &win_y);
 
-		// white background color
-		for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-			{
-				pixels[(i + width*j) * 3 + 0] = 1.0f;	//red
-				pixels[(i + width*j) * 3 + 1] = 1.0f;	//green
-				pixels[(i + width*j) * 3 + 2] = 1.0f;	//blue
-			}
-
-		draw();
+		for (int i = 0; i < 10; i++)
+			geo[i]->draw();
 
 		glDrawPixels(width, height, GL_RGB, GL_FLOAT, pixels);
 		/* Swap front and back buffers */
