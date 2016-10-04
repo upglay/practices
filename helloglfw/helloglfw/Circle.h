@@ -1,8 +1,8 @@
 #pragma once
-#include "Global.h"
 
 class Circle : public Geometry
 {
+private:
 	int center_x_, center_y_, radius_, thickness_;
 	const int num_segments = 1000;
 
@@ -14,7 +14,13 @@ public:
 		:center_x_(_center_x), center_y_(_center_y), radius_(_radius), thickness_(_thickness)
 	{}
 
-
+	void init(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
+	{
+		center_x_ = _center_x;
+		center_y_ = _center_y;
+		radius_ = _radius;
+		thickness_ = _thickness;
+	}
 
 	void draw()
 	{

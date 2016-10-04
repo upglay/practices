@@ -1,10 +1,8 @@
 #pragma once
-#include "Global.h"
-#include <stdio.h>
 
 class Polygon : public Geometry
 {
-	int center_x_, center_y_, radius_;
+	int center_x_, center_y_, radius_, thickness_;
 	int num_polygon_;
 
 public:
@@ -14,6 +12,15 @@ public:
 	Polygon(const int& _center_x, const int& _center_y, const int& _radius, const int& _num_polygon)
 		:center_x_(_center_x), center_y_(_center_y), radius_(_radius), num_polygon_(_num_polygon)
 	{}
+
+	void init(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness, const int& _num_polygon)
+	{
+		center_x_ = _center_x;
+		center_y_ = _center_y;
+		radius_ = _radius;
+		thickness_ = _thickness;
+		num_polygon_ = _num_polygon;
+	}
 
 	void draw()
 	{

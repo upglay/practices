@@ -3,7 +3,6 @@
 #include <math.h>
 #include <string>
 
-GLFWwindow* window;
 double win_x, win_y;
 
 const int width = 640;

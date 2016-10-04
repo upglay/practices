@@ -13,59 +13,42 @@
 int main(void)
 {
 	GLFWwindow* window;
-	Geometry **geo = new Geometry*[6];
-	//for (int i = 0; i < 6; i++)
-	//{
-	//	geo[i] = new Square;
-	//}
-	
-	geo[0]->clearBackgroundColor();
 
 	std::vector<Geometry*> geo_vector;
 
+	geo_vector.push_back(Geometry::createGeometry(std::string("Circle")));
+	geo_vector.push_back(Geometry::createGeometry(std::string("Square")));
+	geo_vector.push_back(Geometry::createGeometry(std::string("Triangle")));
+	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon")));
+	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon")));
+	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon")));
+	
+	//drawing red circle(in mother class only once)
 	for (int j = 0; j < 2; j++)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			int pos = i + (3 * j);
-			if (pos == 1)
-			{
-				geo_vector.push_back(new Square(100 + 200 * i, 160 * (j + 1), 20));
-			}
-			else if (pos == 2)
-			{
-				geo_vector.push_back(new Circle(100 + 200 * i, 160 * (j + 1), 20, 5));
-			}
-			else
-			{
-				geo_vector.push_back(new Polygon(100 + 200 * i, 160 * (j + 1), 20, pos + 3));
-			}
-			geo_vector[pos]->initialize(100 + 200 * i, 160 * (j + 1), 50);
+			geo_vector[pos]->initialize(100 + 200 * i, 160 * (j + 1), 75, 3);
 		}
 	}
 
-	//for (int j = 0; j < 2; j++)
-	//{
-	//	for (int i = 0; i < 3; i++)
-	//	{
-	//		int pos = i + (3 * j);
-	//		std::cout << pos << std::endl;
-	//		if (pos < 2)
-	//		{
-	//			geo[pos] = new Square(100 + 200 * i, 160 * (j + 1), 20);
-	//		}
-	//		else if(pos >= 2 && pos < 4)
-	//		{
-	//			geo[pos] = new Circle(100 + 200 * i, 160 * (j + 1), 20, 5);
-	//		}
-	//		else
-	//		{
-	//			geo[pos] = new Triangle(100 + 200 * i, 160 * (j + 1), 20);
-	//		}
-	//		geo[pos]->initialize(100 + 200 * i, 160 * (j + 1), 50);
-	//	}
-	//}
+	Circle *temp = (Circle*)geo_vector[0];
+	temp->init(100 + 200*0, 160*1, 45, 5);
+
+	Square *temp1 = (Square*)geo_vector[1];
+	temp1->init(100 + 200*1, 160*1, 45, 5);
+
+	Triangle *temp2 = (Triangle*)geo_vector[2];
+	temp2->init(100 + 200 * 2, 160 * 1, 45, 5);
 	
+	Polygon* temp3;
+	for (int i = 0; i < 3; i++)
+	{
+		temp3 = (Polygon*)geo_vector[3 + i];
+		temp3->init(100 + 200 * i, 160 * 2, 45, 5, 5+i);
+	}
+
 	/* Initialize the library */
 	if (!glfwInit())
 		return -1;
@@ -81,6 +64,7 @@ int main(void)
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 
+	geo_vector[0]->clearBackgroundColor();
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -96,12 +80,6 @@ int main(void)
 
 		}
 			
-		//for (int i = 0; i < 6; i++)
-		//{
-		//	geo[i]->findInner(win_x, height - win_y);
-		//	geo[i]->draw();
-		//}
-			
 		glDrawPixels(width, height, GL_RGB, GL_FLOAT, pixels);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -113,7 +91,26 @@ int main(void)
 	glfwTerminate();
 
 	delete[] pixels;
-	delete geo;
 
 	return 0;
+}
+
+Geometry* Geometry::createGeometry(std::string& name)
+{
+	if (name == "Circle")
+	{
+		return new Circle();
+	}
+	else if (name == "Square")
+	{
+		return new Square();
+	}
+	else if (name == "Triangle")
+	{
+		return new Triangle();
+	}
+	else if (name == "Polygon")
+	{
+		return new Polygon();
+	}
 }

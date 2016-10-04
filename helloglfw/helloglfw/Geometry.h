@@ -44,9 +44,7 @@ public:
 	virtual void draw() = 0;
 
 	static Geometry* createGeometry(std::string& name);
-
-
-
+	
 	void drawOnePixel(const int& i, const int& j)
 	{
 		pixels[(i + width*j) * 3 + 0] = object_color_.red;	//red
@@ -118,8 +116,21 @@ public:
 				setColor(1.0f, 0.0f, 0.0f);
 				initialize(center_x_, center_y_, radius_ / 2);
 			}
+		}	
+		else if (state_ == 2)
+		{
+			float dis = (center_x_ - x)*(center_x_ - x) + (center_y_ - y)*(center_y_ - y);
+			if (dis <= radius_*radius_)
+			{
+				setColor(0.0f, 0.0f, 1.0f);
+				initialize(center_x_, center_y_, radius_, 3);
+			}
+			else
+			{
+				setColor(1.0f, 0.0f, 0.0f);
+				initialize(center_x_, center_y_, radius_, 3);
+			}
 		}
-		
 	}
 
 	//box
