@@ -14,7 +14,7 @@ public:
 		: center_x_(_cx), center_y_(_cy), radius_(_half_size * 2)
 	{}
 
-	void init(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
+	void setInit(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
 	{
 		center_x_ = _center_x;
 		center_y_ = _center_y;
@@ -27,7 +27,7 @@ public:
 		fill_ = _fill;
 	}
 
-	void draw()
+	void draw(float* pixels)
 	{
 		if (fill_)
 		{
@@ -35,16 +35,16 @@ public:
 			{
 				for (int j = center_y_ - (radius_ / 2); j < center_y_ + (radius_ / 2); j++)
 				{
-					drawOnePixel(i, j);
+					drawOnePixel(i, j, pixels);
 				}
 			}
 		}
 		else
 		{
-			drawLine(center_x_ - (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ + (radius_ / 2));
-			drawLine(center_x_ + (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ - (radius_ / 2));
-			drawLine(center_x_ + (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ - (radius_ / 2));
-			drawLine(center_x_ - (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ + (radius_ / 2));
+			drawLine(center_x_ - (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ + (radius_ / 2), pixels);
+			drawLine(center_x_ + (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ - (radius_ / 2), pixels);
+			drawLine(center_x_ + (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ - (radius_ / 2), pixels);
+			drawLine(center_x_ - (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ + (radius_ / 2), pixels);
 		}
 	}
 };

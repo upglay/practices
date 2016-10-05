@@ -14,7 +14,7 @@ public:
 		:center_x_(_center_x), center_y_(_center_y), radius_(_radius), thickness_(_thickness)
 	{}
 
-	void init(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
+	void setInit(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
 	{
 		center_x_ = _center_x;
 		center_y_ = _center_y;
@@ -22,7 +22,7 @@ public:
 		thickness_ = _thickness;
 	}
 
-	void draw()
+	void draw(float* pixels)
 	{
 		float theta = 2 * 3.1415926 / float(num_segments);
 		float c = cosf(theta);//precalculate the sine and cosine
@@ -38,7 +38,7 @@ public:
 			y = 0;
 			for (int ii = 0; ii < num_segments; ii++)
 			{
-				drawOnePixel(x + center_x_, y + center_y_);
+				drawOnePixel(x + center_x_, y + center_y_, pixels);
 
 				//apply the rotation matrix
 				t = x;

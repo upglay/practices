@@ -12,7 +12,7 @@ public:
 		:center_x_(_center_x), center_y_(_center_y), radius_(_radius)
 	{}
 
-	void init(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
+	void setInit(const int& _center_x, const int& _center_y, const int& _radius, const int& _thickness)
 	{
 		center_x_ = _center_x;
 		center_y_ = _center_y;
@@ -20,7 +20,7 @@ public:
 		thickness_ = _thickness;
 	}
 
-	void draw()
+	void draw(float* pixels)
 	{
 		int x_pos_[3], y_pos_[3];
 
@@ -41,8 +41,8 @@ public:
 			y = s * t + c * y;
 		}
 
-		drawLine(x_pos_[0], y_pos_[0], x_pos_[1], y_pos_[1]);
-		drawLine(x_pos_[2], y_pos_[2], x_pos_[1], y_pos_[1]);
-		drawLine(x_pos_[2], y_pos_[2], x_pos_[0], y_pos_[0]);
+		drawLine(x_pos_[0], y_pos_[0], x_pos_[1], y_pos_[1], pixels);
+		drawLine(x_pos_[2], y_pos_[2], x_pos_[1], y_pos_[1], pixels);
+		drawLine(x_pos_[2], y_pos_[2], x_pos_[0], y_pos_[0], pixels);
 	}
 };

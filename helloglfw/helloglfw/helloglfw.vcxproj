@@ -118,12 +118,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Geometry.h" />
-    <ClInclude Include="Global.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Square.h" />
     <ClInclude Include="Triangle.h" />
