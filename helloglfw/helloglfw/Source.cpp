@@ -20,7 +20,7 @@ int main(void)
 	geo_vector.push_back(Geometry::createGeometry(std::string("Triangle")));
 	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon_5")));
 	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon_6")));
-	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon_7")));
+	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon_14")));
 	
 	//drawing red circle(in mother class only once)
 	for (int j = 0; j < 2; j++)

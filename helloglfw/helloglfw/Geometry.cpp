@@ -6,12 +6,19 @@
 
 Geometry* Geometry::createGeometry(std::string& name)
 {
-	int poly;
+	int poly = 0;
 	if (name.find('_') != std::string::npos)
 	{
-		poly = name.back() - '0';
-		name.pop_back();
-		name.pop_back();
+		size_t pos = name.find('_');
+		std::string position;
+		position = name.substr(pos + 1);
+		name = name.substr(0, pos);
+
+		for (int i = 0; i < position.size(); i++)
+		{
+			poly *= 10;
+			poly += position.at(i) - '0';
+		}
 	}
 
 	if (name == "Circle")
