@@ -2,15 +2,14 @@
 #include "Geometry.h"
 #include <vector>
 #include <iostream>
+#include "MyPainter2D.h"
 
-const int width = 640;
-const int height = 480;
-
-float* pixels = new float[width * height * 3];
+MyPainter2D my_painter;
 
 int main(void)
 {
-	GLFWwindow* window;
+	my_painter.initialize();
+	
 	double win_x, win_y;
 
 	std::vector<Geometry*> geo_vector;
@@ -22,53 +21,37 @@ int main(void)
 	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon_6")));
 	geo_vector.push_back(Geometry::createGeometry(std::string("Polygon_14")));
 	
+	
 	//drawing red circle(in mother class only once)
 	for (int j = 0; j < 2; j++)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			int pos = i + (3 * j);
-			geo_vector[pos]->initialize(100 + 200 * i, 160 * (j + 1), 75, 5, pixels);
+			geo_vector[pos]->initialize(100 + 200 * i, 160 * (j + 1), 75, 5, my_painter.pixels);
 			geo_vector[pos]->setInit(100 + 200 * i, 160 * (j + 1), 45, 3);
 		}
 	}
 
-	/* Initialize the library */
-	if (!glfwInit())
-		return -1;
+	geo_vector[0]->clearBackgroundColor(my_painter.pixels);
+	
+	
 
-	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-		return -1;
-	}
-
-	/* Make the window's context current */
-	glfwMakeContextCurrent(window);
-
-	geo_vector[0]->clearBackgroundColor(pixels);
 	/* Loop until the user closes the window */
-	while (!glfwWindowShouldClose(window))
+	while(!my_painter.shouldCloseWindow())
 	{
-		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT);
+		
+		my_painter.preprocessing();
 
-		glfwGetCursorPos(window, &win_x, &win_y);
-
+		glfwGetCursorPos(my_painter.window, &win_x, &win_y);
+		
 		for (auto itr : geo_vector)
 		{
-			(itr)->findInner(win_x, height - win_y, pixels);
-			(itr)->draw(pixels);
+			(itr)->findInner(win_x, my_painter.height - win_y, my_painter.pixels);
+			(itr)->draw(my_painter.pixels);
 		}
-			
-		glDrawPixels(640, 480, GL_RGB, GL_FLOAT, pixels);
-		/* Swap front and back buffers */
-		glfwSwapBuffers(window);
-
-		/* Poll for and process events */
-		glfwPollEvents();
+		
+		my_painter.postprocessing();
 	}
 
 	glfwTerminate();

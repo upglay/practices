@@ -21,6 +21,9 @@
     <ClCompile Include="Geometry.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="MyPainter2D.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Geometry.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Polygon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyPainter2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
